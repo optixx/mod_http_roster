@@ -18,18 +18,17 @@ stop(Host) ->
   ok.
   
 on_presence_joined(User, Server, _Resource, _Packet) ->
+  %%?INFO_MSG("mod_global_roster joined user=~s resource=~p", [User,_Resource]),
   {ok, Client} = client(Server),
-  {ok, <<"1">>} = eredis:q(Client, ["SADD", key_name(Server), User]),
+  {ok, <<"1">>} = eredis:q(Client, ["HSET", User,_Resource, "1"]),
   none.
 
 on_presence_left(User, Server, _Resource, _Status) ->
+  %%?INFO_MSG("mod_global_roster left user=~s resource=~p", [User,_Resource]),
   {ok, Client} = client(Server),
-  {ok, <<"1">>} = eredis:q(Client, ["SREM", key_name(Server), User]),
+  {ok, <<"1">>} = eredis:q(Client, ["HDEL", User,_Resource]),
   none.
 
-key_name(Server) ->
-  OnlineKey = gen_mod:get_module_opt(Server, ?MODULE, key, "roster:"),
-  string:concat(OnlineKey, Server).
 
 redis_host(Server) ->
   gen_mod:get_module_opt(Server, ?MODULE, redis_host, "127.0.0.1").
