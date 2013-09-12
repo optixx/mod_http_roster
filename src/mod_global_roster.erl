@@ -20,13 +20,13 @@ stop(Host) ->
 on_presence_joined(User, Server, _Resource, _Packet) ->
   %%?INFO_MSG("mod_global_roster joined user=~s resource=~p", [User,_Resource]),
   {ok, Client} = client(Server),
-  {ok, <<"1">>} = eredis:q(Client, ["HSET", User,_Resource, "1"]),
+  {ok, Ret} = eredis:q(Client, ["HSET", User,_Resource, "1"]),
   none.
 
 on_presence_left(User, Server, _Resource, _Status) ->
   %%?INFO_MSG("mod_global_roster left user=~s resource=~p", [User,_Resource]),
   {ok, Client} = client(Server),
-  {ok, <<"1">>} = eredis:q(Client, ["HDEL", User,_Resource]),
+  {ok, Ret} = eredis:q(Client, ["HDEL", User,_Resource]),
   none.
 
 
