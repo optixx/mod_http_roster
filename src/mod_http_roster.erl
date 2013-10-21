@@ -1,4 +1,4 @@
--module(mod_global_roster_http).
+-module(mod_http_roster).
 
 -behavior(gen_mod).
 
@@ -7,25 +7,25 @@
 
 
 start(Host, _Opts) ->
-  ?INFO_MSG("mod_global_roster_http starting", []),
+  ?INFO_MSG("mod_http_roster starting", []),
   ibrowse:start(),
   ejabberd_hooks:add(set_presence_hook, Host, ?MODULE, on_presence_joined, 50),
   ejabberd_hooks:add(unset_presence_hook, Host, ?MODULE, on_presence_left, 50),
   ok.
 
 stop(Host) ->
-  ?INFO_MSG("mod_global_roster_http stopping", []),
+  ?INFO_MSG("mod_http_roster stopping", []),
   ejabberd_hooks:remove(set_presence_hook, Host, ?MODULE, on_presence_joined, 50),
   ejabberd_hooks:remove(unset_presence_hook, Host, ?MODULE, on_presence_left, 50),
   ok.
   
 on_presence_joined(User, Server, _Resource, _Packet) ->
-  ?INFO_MSG("mod_global_roster_http joined user=~s resource=~p", [User,_Resource]),
+  ?INFO_MSG("mod_http_roster joined user=~s resource=~p", [User,_Resource]),
   ibrowse:send_req(lists:concat([url(Server),"/api/chat/operator/presence/?user=",User,"&resource=",_Resource,"&action=joined"]), [], get),
   none.
 
 on_presence_left(User, Server, _Resource, _Status) ->
-  ?INFO_MSG("mod_global_roster_http left user=~s resource=~p", [User,_Resource]),
+  ?INFO_MSG("mod_http_roster left user=~s resource=~p", [User,_Resource]),
   ibrowse:send_req(lists:concat([url(Server),"/api/chat/operator/presence/?user=",User,"&resource=",_Resource,"&action=left"]), [], get),
   none.
 
